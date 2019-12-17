@@ -13,11 +13,11 @@
 ########################
 
 # Defining folder and files path
-CONF_DIR="/opt/scripts/etc/transmission_cleaner"
+CONF_DIR="./"
 CONF_FILE_TORRENT="$CONF_DIR/private_torrents.txt"
-CONF_FILE_AUTH="$CONF_DIR/auth.txt"
+CONF_FILE_AUTH="$CONF_DIR/auth.secret"
 
-LOG_FILE="/opt/scripts/var/log/transmission_cleaner.log"
+LOG_FILE="$CONF_DIR/transmission_cleaner.log"
 TMISSION_BIN="/usr/bin/transmission-remote"
 
 # Gathering authentication information from separate file
