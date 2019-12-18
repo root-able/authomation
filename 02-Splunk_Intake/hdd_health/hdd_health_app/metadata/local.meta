@@ -1,0 +1,27 @@
+[app/ui]
+version = 7.3.0
+modtime = 1576709278.113564000
+
+[app/launcher]
+version = 7.3.0
+modtime = 1576709278.126728000
+
+[savedsearches/Partition%20details%20per%20disk%20-%20LSBLK]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = admin
+version = 7.3.0
+modtime = 1576710347.729467000
+
+[savedsearches/Raid%20array%20opportunity%20among%20disks%20-%20SMARTCTL]
+export = none
+owner = admin
+version = 7.3.0
+modtime = 1576710416.726467000
+
+[views/hdd_health_monitoring]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = admin
+version = 7.3.0
+modtime = 1576712612.778698000
