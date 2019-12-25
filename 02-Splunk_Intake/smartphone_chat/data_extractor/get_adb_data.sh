@@ -17,7 +17,7 @@ CURRENT_FOLDER="/home/pi/scripts"
 ADB_EXE="/usr/bin/adb"
 SHARE_FOLDER="/mnt/Logs"
 SHARE=$(cat "$CURRENT_FOLDER/get_adb_share.txt")
-CREDS_PATH="$CURRENT_FOLDER/smb_credentials.txt"
+CREDS_PATH="$CURRENT_FOLDER/smb_credentials.secret"
 OUTPUT_EXT="adb"
 
 
