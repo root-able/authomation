@@ -55,7 +55,7 @@ do
 	file_date_final=$(echo $file_date_all | tr ' ' '\n' | sort | grep -v '^1970' | head -n 1)
 
 	# Defining output file name and path
-	file_folder="$DEST_FOLDER"$(LC_ALL="fr_FR.utf8" date --date="$file_date_final" "$PATH_PATTERN")
+	file_folder="$DEST_FOLDER""/"$(LC_ALL="fr_FR.utf8" date --date="$file_date_final" "$PATH_PATTERN")
 	file_path="$file_folder""/""$file_name"
 
 	# Creating destination path and actually moving file
