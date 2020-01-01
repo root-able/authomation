@@ -19,9 +19,8 @@ USER="$3"
 GROUP="$4"
 
 # Defining extension and path patterns
-EXT_WHITELIST='\.(jpg|jpeg|gif|png|tif|webp)$'
-#PATH_PATTERN='+%Y/%m - %B/%d - %A'
-PATH_PATTERN='+%Y/%m - %B'
+EXT_WHITELIST='\.('"$(cat extensions_whitelist.txt | tr '\n' '|' | sed -r 's/\|$//g')"')$'
+PATH_PATTERN='+%Y/%m - %B/Semaine %W'
 
 # Defining access mask and ownership for output files
 DEST_PERM="700"
@@ -36,9 +35,15 @@ DEST_OWNER="$USER:$GROUP"
 OLDIFS=$IFS
 IFS=$'\n'
 
+# Initializing counters
+file_count=0
+
 # Processing each file found matching whitelist from input folder
 for file in $(find "$SOURCE_FOLDER" -name '*' | grep -Ei "$EXT_WHITELIST");
 do 
+	# Iterating folder counter
+	((file_count++))
+
 	# Extracting file name and extension
 	file_name=$(basename "$file")
 	file_ext=$(echo "$file_name" | grep -oE '[^\.]+$')
@@ -68,5 +73,11 @@ done
 chmod -R "$DEST_PERM" "$DEST_FOLDER"
 chown -R "$DEST_OWNER" "$DEST_FOLDER"
 
+# Printing results of processing
+echo "Processed file_count=\"$file_count\""
+
 # Restoring old IFS
 IFS=$OLDIFS
+
+# Exiting upon sucdess
+exit 0
