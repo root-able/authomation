@@ -19,7 +19,8 @@ USER="$3"
 GROUP="$4"
 
 # Defining extension and path patterns
-EXT_WHITELIST='\.('"$(cat extensions_whitelist.txt | tr '\n' '|' | sed -r 's/\|$//g')"')$'
+WHITELIST_PATH="$(echo $0 | sed -r 's/\/[^\/]+$//g')""/extensions_whitelist.txt"
+EXT_WHITELIST='\.('"$(cat "$WHITELIST_PATH" | tr '\n' '|' | sed -r 's/\|$//g')"')$'
 PATH_PATTERN='+%Y/%m - %B/Semaine %W'
 
 # Defining access mask and ownership for output files
