@@ -4,12 +4,13 @@
 ### DEFINING VARIABLES ###
 ##########################
 
-SHARE_LIST="/root/rsync_backup/rsync_shares.txt"
+SHARE_LIST="./rsync_shares.secret"
 SHARE_PATH="/mnt"
-CREDS_PATH="/root/rsync_backup/smb_credentials.txt"
+LOGS_PATH="/home/pi/authomation/01-Data_Backup/rsync_incremental/rsync_incremental.log"
+CREDS_PATH="/home/pi/authomation/01-Data_Backup/rsync_incremental/smb_credentials.secret"
 HDD_PATH="/media/pi/e3029fc5-7f70-4a71-bbeb-c963f8744961"
 BACKUP_PATH="$HDD_PATH/Rsync_Backups"
-API_URL=$(head -n 1 /root/rsync_backup/rsync_api.txt)
+API_URL=$(head -n 1 ./rsync_api.secret)
 
 ##########################
 ### DEFINING FUNCTIONS ###
@@ -17,8 +18,9 @@ API_URL=$(head -n 1 /root/rsync_backup/rsync_api.txt)
 
 # Function used to log informations
 log_result () {
-	/bin/echo $(date '+%Y-%m-%d %H:%M:%S') - $0 - $1 - $2
+	/bin/echo $(date '+%Y-%m-%d %H:%M:%S') - $0 - $1 - $2 >> $LOGS_PATH
 	}
+
 # Function used to check whether a folder is mounted or not
 mount_check () {
 
@@ -144,7 +146,7 @@ backup_share () {
 ############
 
 # Powering up external HDD tray through Jeedom API call
-/usr/bin/curl -s $API_URL"1374"
+/usr/bin/curl -s $API_URL"667"
 
 # Checking whether external HDD was sucessfully mounted
 mount_check 5 10 $HDD_PATH
@@ -159,4 +161,4 @@ backup_share $SHARE_LIST $SHARE_PATH $BACKUP_PATH
 umount_check 5 2 $HDD_PATH
 
 # Powering off external HDD tray through Jeedom API call
-/usr/bin/curl -s $API_URL"1373"
+/usr/bin/curl -s $API_URL"668"
