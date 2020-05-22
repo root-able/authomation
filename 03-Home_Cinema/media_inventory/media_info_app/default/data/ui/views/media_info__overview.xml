@@ -1,0 +1,194 @@
+<form>
+  <label>Media Info - Overview</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time_range">
+      <label>Période d'analyse</label>
+      <default>
+        <earliest>-30d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="serie_name">
+      <label>Série</label>
+      <fieldForLabel>serie_name</fieldForLabel>
+      <fieldForValue>serie_name</fieldForValue>
+      <search>
+        <query>index="home_splunking" sourcetype="mediainfo:xml" 
+| stats values(serie_name) as serie_name
+|  mvexpand serie_name</query>
+        <earliest>$time_range.earliest$</earliest>
+        <latest>$time_range.latest$</latest>
+      </search>
+      <choice value="*">Toutes</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="dropdown" token="season_number">
+      <label>Saison</label>
+      <fieldForLabel>serie_season</fieldForLabel>
+      <fieldForValue>serie_season</fieldForValue>
+      <search>
+        <query>index="home_splunking" sourcetype="mediainfo:xml" 
+| stats values(serie_season) as serie_season
+|  mvexpand serie_season</query>
+        <earliest>$time_range.earliest$</earliest>
+        <latest>$time_range.latest$</latest>
+      </search>
+      <choice value="*">Toutes</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Frame rate</title>
+      <chart>
+        <search>
+          <query>index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| fields Frame_rate File_name
+| rex field=Frame_rate "(?&lt;Frame_rate_clean&gt;[0-9\.]+)"
+| mvexpand Frame_rate_clean
+| eval Frame_rate_round = round(Frame_rate_clean)
+| where Frame_rate_round &gt; 20 
+| stats dc(File_name) as File_count by Frame_rate_round
+| sort - File_count, Frame_rate_round</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Video resolution</title>
+      <chart>
+        <search>
+          <query>index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| eval video_resolution = Sampled_Height+" x "+Sampled_Width
+| fields video_resolution File_name
+| stats dc(File_name) as File_count by video_resolution
+| sort - File_count, video_resolution</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Video resolution (nomalized)</title>
+      <chart>
+        <search>
+          <query>index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| fields Sampled_Height File_name
+| eval video_quality = case(Sampled_Height &gt; 2000, "UHD", 1150 &gt;= Sampled_Height and Sampled_Height &gt; 1050, "1080p", 750 &gt;= Sampled_Height and Sampled_Height &gt; 700, "720p", 500 &gt;= Sampled_Height and Sampled_Height &gt; 450, "480p", 400 &gt;= Sampled_Height and Sampled_Height &gt; 320, "360p", 1=1, "other")
+| stats dc(File_name) as File_count by video_quality
+| sort - File_count</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Audio Language</title>
+      <chart>
+        <search>
+          <query>index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| fields File_name Audio_Language_List
+| makemv delim=" / " Audio_Language_List
+| mvexpand Audio_Language_List
+| eval Audio_Language_List = case(Audio_Language_List=="Francais", "French", isnull(Audio_Language_List), "unknown", 1=1, Audio_Language_List)
+| stats dc(File_name) as File_count by Audio_Language_List
+| sort - File_count</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="resolution">
+        <label>Resolution</label>
+        <choice value="*">Toutes</choice>
+        <default>*</default>
+        <prefix>"</prefix>
+        <suffix>"</suffix>
+        <initialValue>*</initialValue>
+        <fieldForLabel>video_resolution</fieldForLabel>
+        <fieldForValue>video_resolution</fieldForValue>
+        <search>
+          <query>index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| eval video_resolution = Sampled_Height+" x "+Sampled_Width
+| stats values(video_resolution) as video_resolution 
+|  mvexpand video_resolution</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+        </search>
+      </input>
+      <input type="dropdown" token="language">
+        <label>Langue</label>
+        <choice value="*">Toutes</choice>
+        <default>*</default>
+        <prefix>"</prefix>
+        <suffix>"</suffix>
+        <initialValue>*</initialValue>
+        <fieldForLabel>language</fieldForLabel>
+        <fieldForValue>language</fieldForValue>
+        <search>
+          <query>
+index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| stats values(Audio_Language_List) as language 
+|  mvexpand language
+          </query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+        </search>
+      </input>
+      <table>
+        <title>Series file summary</title>
+        <search>
+          <query>index="home_splunking" sourcetype="mediainfo:xml" serie_season=$season_number$ serie_name=$serie_name$
+| rename Mediainfo.File.track.* as *
+| eval video_resolution = Sampled_Height+" x "+Sampled_Width
+| eval Audio_Language_List = case(Audio_Language_List=="Francais", "French", isnull(Audio_Language_List), "unknown", 1=1, Audio_Language_List)
+| search video_resolution=$resolution$ Audio_Language_List=$language$
+| rex field=Frame_rate "(?&lt;Frame_rate_clean&gt;[0-9\.]+)"
+| mvexpand Frame_rate_clean
+| eval Frame_rate_round = round(Frame_rate_clean)
+| where Frame_rate_round &gt; 20 
+| fillnull value="unknown" serie_name, serie_season, video_resolution, Audio_Language_List
+| stats min(_time) as start_time, max(_time) as end_time, values(File_name) as Episodes by serie_name, serie_season, video_resolution, Audio_Language_List
+| convert ctime(start_time) ctime(end_time) timeformat="%Y-%m-%d %H:%M:%S"</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

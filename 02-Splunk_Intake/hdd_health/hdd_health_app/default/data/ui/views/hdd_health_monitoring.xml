@@ -1,0 +1,147 @@
+<form>
+  <label>HDD Health Monitoring</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time_range">
+      <label>Time Range</label>
+      <default>
+        <earliest>-1y</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="model_family">
+      <label>HDD Family</label>
+      <choice value="*">Tous</choice>
+      <default>*</default>
+      <initialValue>*</initialValue>
+      <fieldForLabel>model_family</fieldForLabel>
+      <fieldForValue>model_family</fieldForValue>
+      <search>
+        <query>index="home_splunking" sourcetype=_json source="*_smartctl.json" 
+|  stats values(model_family) as model_family 
+|  mvexpand model_family</query>
+        <earliest>$time_range.earliest$</earliest>
+        <latest>$time_range.latest$</latest>
+      </search>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Distribution of SMART test (extended) per results</title>
+        <search>
+          <query>index="home_splunking" sourcetype=_json source="*_smartctl.json" model_family=$model_family$ | stats count by ata_smart_data.offline_data_collection.status.string</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Distribution of SMART test (fast) per results</title>
+        <search>
+          <query>index="home_splunking" sourcetype=_json source="*_smartctl.json" model_family=$model_family$ | stats count by ata_smart_data.self_test.status.string</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Details of SMART info per hard drive</title>
+        <search>
+          <query>index="home_splunking" sourcetype="smartctl:json" source="*_smartctl.json" model_family=$model_family$
+| rename interface_speed.max.string as speed, ata_smart_self_test_log.standard.error_count_total as smart_test_errors, ata_smart_self_test_log.standard.table{}.type.string as test_types, ata_smart_self_test_log.standard.table{}.lifetime_hours as lifetime_hours, ata_smart_error_log.summary.count as smart_read_errors
+| join type=left serial_number [ search index="home_splunking" sourcetype=smartctl:json source="*_lsblk.json"
+| rex field=source ".*get_smartctl\/(?&lt;serial_number&gt;[^_\/]+)_lsblk.json" 
+| rename blockdevices{}.size as disk_size
+| stats values(disk_size) as disk_size by serial_number ]
+| fillnull value="unknown" model_family, serial_number, disk_size, rotation_rate, speed
+| stats count as checks, min(_time) as start_time, max(_time) as end_time, sum(smart_read_errors) as smart_read_errors, sum(smart_test_errors) as smart_test_errors, max(lifetime_hours) as lifetime_hours values(test_types) as test_types by model_family, serial_number, disk_size, rotation_rate, speed
+| convert ctime(start_time) ctime(end_time) timeformat="%Y-%m-%d %H:%M:%S"
+| sort smart_test_errors, smart_read_errors, disk_size, lifetime_hours
+|  eval test_types=mvjoin(test_types,";")</query>
+          <earliest>$time_range.earliest$</earliest>
+          <latest>$time_range.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>

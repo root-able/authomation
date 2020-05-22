@@ -1,0 +1,21 @@
+[app/ui]
+version = 7.3.0
+modtime = 1576623823.600539000
+
+[app/launcher]
+version = 7.3.0
+modtime = 1576623823.608461000
+
+[savedsearches/Medi%20Info%20-%20Serie%20distribution%20by%20language]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = admin
+version = 7.3.0
+modtime = 1576624149.355124000
+
+[views/media_info__overview]
+access = read : [ * ], write : [ admin, power ]
+export = none
+owner = admin
+version = 7.3.0
+modtime = 1576624177.396025000
