@@ -183,6 +183,7 @@ def main(server, username, startpage, outfile, infotype='recenttracks'):
     page = startpage  # for case of exception
     totalpages = -1  # ditto
     n = 0
+    max = 0
     try:
         for page, totalpages, tracks in get_tracks(server, username, startpage, tracktype=infotype):
             print("Got page %s of %s.." % (page, totalpages))
@@ -193,6 +194,10 @@ def main(server, username, startpage, outfile, infotype='recenttracks'):
                     #Can not use timestamp as key for loved/banned tracks as it's not unique
                     n += 1
                     trackdict.setdefault(n, track)
+            # Ajout de max 5 pages à lire 
+            max+=1
+            if (max >4):
+                break
     except ValueError as e:
         exit(e)
     except Exception:

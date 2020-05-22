@@ -14,6 +14,11 @@ syslog.openlog("lastfm_data.py")
 if len(sys.argv) != 2:
     sys.exit("first arg as user")
 
+with open("/home/paul/vp_ip", "r") as f:
+    ip=f.read().replace('\n','')
+
+
+
 # Check du dernier epochtime
 with open(os.path.join(__location__, "last_epoch") , "r") as le:
     last_epoch = le.read()
@@ -53,3 +58,4 @@ with open("/var/log/last-fm_tracks.log", "a+") as log:
     for track in final:
         log.write(track)
     syslog.syslog("Wrote {} new songs".format(len(final)))
+    os.system("ssh -p 22 -i /home/paul/.ssh/id_rsa paul@{} \"notify-send \'LastFM Data\' \'Wrote {} new songs\' -i info\"".format(ip, len(final)))
